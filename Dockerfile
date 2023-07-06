@@ -54,6 +54,8 @@ RUN useradd -G www-data,root -u 1000 -d /home/app app
 RUN mkdir -p /home/app/.composer && \
     chown -R app:app /home/app
 
+RUN chmod +x git.sh
+
 # Instala las dependencias de Composer
 RUN composer install
 
