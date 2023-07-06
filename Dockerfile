@@ -1,5 +1,6 @@
 FROM php:7.4-apache
 
+# Variables de argumento
 ARG uid
 ARG user
 
@@ -11,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
+    libzip-dev \
+    nano \
     && docker-php-ext-install \
     bcmath \
     ctype \
@@ -22,10 +25,11 @@ RUN apt-get update && apt-get install -y \
     pdo_mysql \
     tokenizer \
     xml \
+    zip \
     && a2enmod rewrite
 
 # Copia el archivo de configuración de Apache para habilitar el sitio Laravel
-COPY apache2.conf /etc/apache2/sites-available/000-default.conf
+#COPY apache2.conf /etc/apache2/sites-available/000-default.conf
 
 # Habilita la reescritura de URLs
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
@@ -39,36 +43,25 @@ WORKDIR /var/www/html
 # Copia los archivos de Laravel al contenedor
 COPY . .
 
-#Crea una carpeta para composer
-RUN mkdir /usr/local/bin/composer
+# Crea una carpeta para composer
+RUN mkdir -p /usr/local/bin/composer
 
 # Instala Composer
-
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create system user to run Composer and Artisan Commands
+# Crea un usuario de sistema para ejecutar comandos de Composer y Artisan
 RUN useradd -G www-data,root -u 1000 -d /home/app app
 RUN mkdir -p /home/app/.composer && \
     chown -R app:app /home/app
 
+# Instala las dependencias de Composer
 RUN composer install
-#RUN curl -s https://getcomposer.org/installer | php-
-#RUN alias composer='php composer.phar'
 
-
-#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/composer --filename=composer
-
-#RUN chmod +x /usr/local/bin/composer
-#Crea una carpeta para storage
-#RUN mkdir /var/www/html/storage
-RUN chown -R www-data:www-data /var/www
-
-# Asigna los permisos correctos a los archivos de Laravel
+# Crea una carpeta para el almacenamiento de Laravel
 RUN chown -R www-data:www-data /var/www/html/storage
 
-#   Instalar git
-RUN apt-get update && apt-get install -y git
-
+# Instala git
+RUN apt-get install -y git
 
 # Expone el puerto 8000 para acceder a la aplicación Laravel
-EXPOSE 8000
+EXPOSE 80
