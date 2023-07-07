@@ -11,8 +11,23 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+
+Route::post('login', 'AuthController@login');
+
 $router->get('/', function () use ($router) {
     return 'Apis';
+});
+
+Route::group([
+    'middleware' => 'auth:api',
+    'prefix' => 'auth'
+], function ($router) {
+
+    //Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');
+
 });
 
 
