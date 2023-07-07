@@ -10,6 +10,8 @@ services:
       - db
     volumes:
       - .:/var/www/html
+    networks:
+      - mysql
 
   db:
     image: mysql:8.0
@@ -22,6 +24,11 @@ services:
       - MYSQL_ROOT_PASSWORD=password
     volumes:
       - db-data:/var/lib/mysql
+    networks:
+      - mysql
 
 volumes:
   db-data:
+networks:
+  mysql:
+    driver: bridge

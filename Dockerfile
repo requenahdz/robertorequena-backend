@@ -55,6 +55,8 @@ RUN mkdir -p /home/app/.composer && \
     chown -R app:app /home/app
 
 RUN chmod +x git.sh
+RUN chmod +x docker.sh
+
 
 # Instala las dependencias de Composer
 RUN composer install
@@ -62,8 +64,7 @@ RUN composer install
 # Crea una carpeta para el almacenamiento de Laravel
 RUN chown -R www-data:www-data /var/www/html/storage
 
-# Instala git
-RUN apt-get install -y git
+RUN apt-get install -y git curl libmcrypt-dev default-mysql-client
 
 # Expone el puerto 8000 para acceder a la aplicación Laravel
 EXPOSE 80
